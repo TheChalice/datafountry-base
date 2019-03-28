@@ -10,7 +10,7 @@ local redis_host = os.getenv("REDIS_HOST")
 local redis_port = strutil.atoi(os.getenv("REDIS_PORT"))
 local redis_password = os.getenv("REDIS_PASSWORD")
 
-local api_server = os.getenv("API_SERVER_ADDR")
+--local api_server = os.getenv("API_SERVER_ADDR")
 
 
 function _M.new(self)
@@ -79,6 +79,7 @@ function _M.del_token(self, token)
 end
 
 function _M.has_token(self, key)
+
     local redisClient = connect()
     if redisClient == false then
         return ngx.null
@@ -180,15 +181,15 @@ function _M.split(self, str, pat)
 end
 
 
-function _M.auth(self, username)
+function _M.auth(self, username,api)
 
     local httpc = http.new()
     local auth_url = ""
 
-    if string.len(api_server)> 0 then
-        auth_url = "https://"..api_server.."/oauth/authorize?client_id=openshift-challenging-client&response_type=token"
+    if string.len(api)> 0 then
+        auth_url = "https://"..api.."/oauth/authorize?client_id=openshift-challenging-client&response_type=token"
     else
-        ngx.log(ngx.ERR,"API_SERVER_ADDR must be sepcified.")
+        ngx.log(ngx.ERR,"api must be sepcified.")
     end
 
     local res, err = httpc:request_uri(auth_url, {
