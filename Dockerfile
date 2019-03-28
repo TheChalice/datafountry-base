@@ -1,4 +1,4 @@
-FROM openresty/openresty
+FROM registry.new.dataos.io/datafoundry/web-base:latest
 
 MAINTAINER Zonesan <chaizs@asiainfo.com>
 
