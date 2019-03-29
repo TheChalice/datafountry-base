@@ -22,23 +22,23 @@ function _M.new(self)
 end
 
 
-local function connect()
+local function connect(host,port,password)
     local redisClient = redis:new()
 
 
     redisClient:set_timeout(1000)
     -- local findservice = require "comm.service"
     -- local redis_host,redis_port=findservice.findservice(os.getenv("REDIS_SERVICE_NAME"))
-    local ok, err = redisClient:connect(redis_host, redis_port)
+    local ok, err = redisClient:connect(host, port)
     if not ok then
-        ngx.log(ngx.ERR, "failed to connect redis server ("..redis_host..":"..redis_port.."): "..err)
+        ngx.log(ngx.ERR, "failed to connect redis server ("..host..":"..port.."): "..err)
         return false
     end
 
-    if string.len(redis_password) > 0 then
-        local res, err = redisClient:auth(redis_password)
+    if string.len(password) > 0 then
+        local res, err = redisClient:auth(password)
         if not res then
-            ngx.log(ngx.ERR, "failed to authenticate with password '"..redis_password.."': ".. err)
+            ngx.log(ngx.ERR, "failed to authenticate with password '"..password.."': ".. err)
             return
         end
     end
@@ -78,9 +78,9 @@ function _M.del_token(self, token)
     return true
 end
 
-function _M.has_token(self, key)
+function _M.has_token(self, key,host,port,password)
 
-    local redisClient = connect()
+    local redisClient = connect(host,port,password)
     if redisClient == false then
         return ngx.null
     end

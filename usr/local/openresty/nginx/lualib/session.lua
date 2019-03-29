@@ -4,6 +4,7 @@ package.path = package.path .. ";/usr/local/openresty/nginx/lualib/?.lua"
 local authorize = require "comm.authorize"
 local json = require "cjson"
 
+
 local function sessionToken(username)
     local tokentool = authorize.new()
     local tokencache = tokentool:has_token(username)
