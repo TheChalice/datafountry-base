@@ -54,8 +54,8 @@ local function connect(host,port,password)
 end
 
 
-function _M.add_bearer_token_ttl(self, key, ttl, value)
-    local redisClient = connect()
+function _M.add_bearer_token_ttl(self, key, ttl, value,host,port,password)
+    local redisClient = connect(host,port,password)
     if redisClient == false then
         return false
     end
