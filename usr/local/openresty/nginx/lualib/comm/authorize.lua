@@ -10,7 +10,7 @@ local redis_host = os.getenv("REDIS_HOST")
 local redis_port = strutil.atoi(os.getenv("REDIS_PORT"))
 local redis_password = os.getenv("REDIS_PASSWORD")
 
---local api_server = os.getenv("API_SERVER_ADDR")
+local api_server = os.getenv("API_SERVER_ADDR")
 
 
 function _M.new(self)
@@ -22,23 +22,23 @@ function _M.new(self)
 end
 
 
-local function connect(host,port,password)
+local function connect()
     local redisClient = redis:new()
 
 
     redisClient:set_timeout(1000)
     -- local findservice = require "comm.service"
     -- local redis_host,redis_port=findservice.findservice(os.getenv("REDIS_SERVICE_NAME"))
-    local ok, err = redisClient:connect(host, port)
+    local ok, err = redisClient:connect(redis_host, redis_port)
     if not ok then
-        ngx.log(ngx.ERR, "failed to connect redis server ("..host..":"..port.."): "..err)
+        ngx.log(ngx.ERR, "failed to connect redis server ("..redis_host..":"..redis_port.."): "..err)
         return false
     end
 
-    if string.len(password) > 0 then
-        local res, err = redisClient:auth(password)
+    if string.len(redis_password) > 0 then
+        local res, err = redisClient:auth(redis_password)
         if not res then
-            ngx.log(ngx.ERR, "failed to authenticate with password '"..password.."': ".. err)
+            ngx.log(ngx.ERR, "failed to authenticate with password '"..redis_password.."': ".. err)
             return
         end
     end
@@ -54,8 +54,8 @@ local function connect(host,port,password)
 end
 
 
-function _M.add_bearer_token_ttl(self, key, ttl, value,host,port,password)
-    local redisClient = connect(host,port,password)
+function _M.add_bearer_token_ttl(self, key, ttl, value)
+    local redisClient = connect()
     if redisClient == false then
         return false
     end
@@ -78,9 +78,8 @@ function _M.del_token(self, token)
     return true
 end
 
-function _M.has_token(self, key,host,port,password)
-
-    local redisClient = connect(host,port,password)
+function _M.has_token(self, key)
+    local redisClient = connect()
     if redisClient == false then
         return ngx.null
     end
@@ -181,15 +180,15 @@ function _M.split(self, str, pat)
 end
 
 
-function _M.auth(self, username,api)
+function _M.auth(self, username)
 
     local httpc = http.new()
     local auth_url = ""
 
-    if string.len(api)> 0 then
-        auth_url = "https://"..api.."/oauth/authorize?client_id=openshift-challenging-client&response_type=token"
+    if string.len(api_server)> 0 then
+        auth_url = "https://"..api_server.."/oauth/authorize?client_id=openshift-challenging-client&response_type=token"
     else
-        ngx.log(ngx.ERR,"api must be sepcified.")
+        ngx.log(ngx.ERR,"API_SERVER_ADDR must be sepcified.")
     end
 
     local res, err = httpc:request_uri(auth_url, {
