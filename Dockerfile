@@ -1,6 +1,7 @@
-FROM registry.new.dataos.io/datafoundry/web-base:latest
+FROM alpine:latest
+# FROM registry.new.dataos.io/datafoundry/web-base:latest
 
-MAINTAINER Zonesan <chaizs@asiainfo.com>
+MAINTAINER jiangtong <jiangtong@asiainfo.com>
 
 
 ADD . /
