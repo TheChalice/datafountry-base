@@ -46,7 +46,9 @@
   ],
   "resolutions": {
     "angular": "1.5.11",
-    "angular-bootstrap": "1.2.1"
+    "angular-bootstrap": "1.2.1",
+    "bootstrap": "3.3.7",
+    "jquery":"2.1.4"
   },
   "license": "MIT",
   "homepage": "https://github.com/lanyuechen/angular-seed",
